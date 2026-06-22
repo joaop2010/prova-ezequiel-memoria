@@ -17,9 +17,13 @@
     100% { transform: rotate(360deg); }
 }
 #resultados {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); /* Cards mais flexíveis */
-    gap: 1rem;
+   display: grid;
+    grid-template-columns: repeat(5, 1fr);  
+    grid-template-rows: repeat(4, 1fr);   
+    gap: 10px;
+    width: 100%;
+    max-width: 800px; 
+    margin: 0 auto;
 }
 .char-info {
     text-align: center;
@@ -32,13 +36,11 @@
 .card-verso {
     background-color: #1e293b;
     border: 2px solid #84cc16;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
-    font-size: 40px;
-    color: white;
+    color: rgba(255, 255, 255, 0.2); 
+    font-size: 50px;
 }    
 .card-inner {
     position: relative;
@@ -60,21 +62,33 @@
 }
 .card-frente {
     transform: rotateY(180deg);
-
     background-color: #1e293b;
     border: 2px solid #84cc16;
-
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column; 
+    align-items: center;   
+    justify-content: flex-start; 
+    padding-top: 10px;      
+    text-align: center;
 }
 .card-frente img {
-    width: 120px;
-    max-height: 120px;
+    width: 90px;           
+    height: 90px;
     object-fit: contain;
+    margin-bottom: 5px;
 }
 .char-info { padding: 1rem; }
+.char-info h3 {
+    margin: 5px 0;
+    font-size: 0.9rem;     
+    color: #ffffff;
+    text-transform: capitalize;
+}
+.char-info p {
+    margin: 0;
+    font-size: 0.75rem;    
+    color: #84cc16;
+}
 #ranking-barra {
     background: #0f172a;
     border: 2px solid #84cc16;
@@ -86,21 +100,58 @@
 }
 
 #ranking-barra, h3 {
-    text-transform: uppercase;
-    text-shadow: 0 0 5px #fff;
+    text-transform: none;
+    text-shadow: none;
+    color: #1e293b;
 }
 #lista-ranking li {
     padding: 10px;
-    border-bottom: 1px solid #334155;
-    font-family: 'Courier New', monospace;
-    color: #84cc16;
+    border-bottom: 1px solid #e2e8f0;
+    color: #475569;
 }
 .main-container {
     display: flex;
+    flex-direction: column;
+    align-items: center;
     gap: 20px;
-    align-items: flex-start; 
+    margin-top: 30px;
 }
 
 #game-wrapper {
     flex: 3; 
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column; 
+    align-items: center;   
+    gap: 20px;
+}
+
+#ranking-barra {
+    width: 100%;
+    max-width: 300px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.card-verso {
+    background-color: #1e293b;
+    border: 2px solid #84cc16;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 40px;
+    background-image: radial-gradient(circle, #84cc16 10%, transparent 10%);
+    background-size: 20px 20px;
+}
+.card-verso::before {
+    content: "◉"; 
+    font-size: 50px;
+    opacity: 0.3;
 }

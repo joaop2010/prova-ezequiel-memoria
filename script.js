@@ -30,8 +30,6 @@ btnPortal.addEventListener('click', async () => {
 
     loader.classList.remove('hidden');
 
-
-
     try {
 
     let personagens = await carregarPersonagem()  
@@ -42,25 +40,19 @@ btnPortal.addEventListener('click', async () => {
         personagens.forEach((pokemon) => {
 
             resultados.innerHTML += `
-                 <div class="card" data-id="${pokemon.id}">
-                    <div class="card-inner">
-
-                        <div class="card-verso">
-                             ?
-                        </div>
-
-                        <div class="card-frente">
-
-                            <img src="${pokemon.image}" alt="${pokemon.name}">
-
-                            <div class="char-info">
-                                <h3>${pokemon.name}</h3>
-                                <p>Tipo: ${pokemon.tipo}</p>
-                            </div>
-                        </div>    
-                    </div>
-                </div>    
-            `;
+     <div class="card" data-id="${pokemon.id}">
+        <div class="card-inner">
+            <div class="card-verso"></div>
+            <div class="card-frente">
+                <img src="${pokemon.image}" alt="${pokemon.name}">
+                <div class="char-info">
+                    <h3>${pokemon.name}</h3>
+                    <p>Tipo: ${pokemon.tipo}</p>
+                </div>
+            </div>    
+        </div>
+    </div>    
+`;
 
 });
 
@@ -94,12 +86,16 @@ cartas.forEach(carta => {
             segundaCarta.classList.add('card-acertada');
             paresEncontrados++;
             if (paresEncontrados === 10) {
-                clearInterval(intervalo);
-                console.log("Você venceu!");
-                alert(`Você venceu em ${tempo} segundos!`);
-                
-            }
-
+        clearInterval(intervalo);
+        console.log("Você venceu!");
+        const pontos = paresEncontrados * 200;
+        const lista = document.getElementById('lista-ranking');
+        const novoItem = document.createElement('li');
+        novoItem.innerHTML = `<span>Você: ${pontos} pts</span>`;
+        lista.appendChild(novoItem);
+        
+        alert(`Parabéns! Você venceu em ${tempo} segundos com ${pontos} pontos!`);
+}
             primeiraCarta = null;
             segundaCarta = null;
             
