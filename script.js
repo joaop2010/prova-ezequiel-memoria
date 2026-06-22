@@ -157,3 +157,19 @@ async function carregarPersonagem() {
 }
 
 });
+async function carregarRanking() {
+    const lista = document.getElementById('lista-ranking');
+    if (!lista) return;
+
+    const top5 = await consultarRanking(); 
+    
+    if (top5 && top5.length > 0) {
+        lista.innerHTML = top5.map((p, index) => `
+            <li class="ranking-item">
+                <span class="rank-pos">${index + 1}º</span>
+                <span class="rank-nome">${p.nome}</span>
+                <span class="rank-pts">${p.pontuacao} pts</span>
+            </li>
+        `).join('');
+    }
+}

@@ -18,20 +18,16 @@
 }
 #resultados {
     display: grid;
-    grid-template-columns: repeat(5, 12rem);
-    gap: 1.5rem;
-    justify-content: center;
-    margin-top: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); /* Cards mais flexíveis */
+    gap: 1rem;
 }
 .char-info {
     text-align: center;
     padding: 1rem;
 }
 .card {
-    width: 12rem;
-    height: 15rem;
-    perspective: 1000px;
-    cursor: pointer;
+    width: 10rem; 
+    height: 13rem;
 }
 .card-verso {
     background-color: #1e293b;
@@ -79,3 +75,32 @@
     object-fit: contain;
 }
 .char-info { padding: 1rem; }
+#ranking-barra {
+    background: #0f172a;
+    border: 2px solid #84cc16;
+    border-radius: 10px;
+    padding: 15px;
+    color: #fff;
+    height: fit-content;
+    flex: 1;
+}
+
+#ranking-barra, h3 {
+    text-transform: uppercase;
+    text-shadow: 0 0 5px #fff;
+}
+#lista-ranking li {
+    padding: 10px;
+    border-bottom: 1px solid #334155;
+    font-family: 'Courier New', monospace;
+    color: #84cc16;
+}
+.main-container {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start; 
+}
+
+#game-wrapper {
+    flex: 3; 
+}
