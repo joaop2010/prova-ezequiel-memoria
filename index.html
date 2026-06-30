@@ -3,38 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Api</title>
+    <title>Jogo da Memória Pokémon</title>
     <link rel="stylesheet" href="style.css">
-    
 </head>
 <body>
-    <button id="btn-portal">Abrir Portal (Fetch API)</button>
 
-<div id="loader" class="hidden">
-    <div class="portal-loader"></div>
-    <p>Sintonizando dimensão</p>
-</div>
-<div id="placar">
-    Erros: <span id="erros">0</span>
-</div>
-<div id="timer">
-    Tempo: <span id="tempo">0</span>s
-</div>
-<div class="main-container">
-    
-    <div id="game-wrapper">
-        <div id="resultados">
+    <div id="tela-inicial">
+        <div class="modal">
+            <h2>Bem-vindo, jogo da memória pokemon!</h2>
+            <input type="text" id="input-nome" placeholder="Digite seu nome..." required>
+            <button id="btn-iniciar">Iniciar Jogo</button>
         </div>
     </div>
 
-    <aside id="ranking-barra">
-        <h3>Ranking</h3>
-        <ul id="lista-ranking">
-        </ul>
-    </aside>
+    <div id="hud" class="hidden">
+        <button id="btn-portal">Abrir Portal (Fetch API)</button>
+        <div id="placar">Erros: <span id="erros">0</span></div>
+        <div id="timer">Tempo: <span id="hud-timer">0</span>s</div>
+        <div>Pares: <span id="hud-pares">0/10</span></div>
+    </div>
 
-</div>
+    <div id="loader" class="hidden">
+        <div class="portal-loader"></div>
+        <p>Sintonizando dimensão...</p>
+    </div>
 
-<script src="script.js"></script>
+    <div id="resultados">
+        <p>O portal está fechado.</p>
+    </div>
+
+    <div id="tela-final" class="hidden">
+        <div class="modal">
+            <h2>Você venceu!</h2>
+            <p>Pontuação: <span id="pontuacao-final">0</span></p>
+            <p>Tempo total: <span id="tempo-final">0</span>s</p>
+            
+            <h3>Top 10 Jogadores</h3>
+            <table id="tabela-ranking">
+                <thead>
+                    <tr>
+                        <th>Posição</th>
+                        <th>Nome</th>
+                        <th>Pontuação</th>
+                        <th>Tempo (s)</th>
+                    </tr>
+                </thead>
+                <tbody id="corpo-ranking"></tbody>
+            </table>
+            <button id="btn-reiniciar">Jogar Novamente</button>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script type="module" src="script.js"></script>
 </body>
 </html>

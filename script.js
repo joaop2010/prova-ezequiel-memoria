@@ -1,8 +1,16 @@
+import { salvarPontuacao, buscarLeaderboard } from './script_db.js';
+
 const btnPortal = document.getElementById('btn-portal');
 const loader = document.getElementById('loader');
 const resultados = document.getElementById('resultados');
 const errosSpan = document.getElementById('erros');
-const tempoSpan = document.getElementById('tempo');
+const tempoSpan = document.getElementById('hud-timer');
+const telaInicial = document.getElementById('tela-inicial');
+const inputNome = document.getElementById('input-nome');
+const btnIniciar = document.getElementById('btn-iniciar');
+const btnReiniciar = document.getElementById('btn-reiniciar');
+const paresSpan = document.getElementById('hud-pares');
+
 let primeiraCarta = null;
 let segundaCarta = null;
 let bloqueado = false;
@@ -11,161 +19,193 @@ let paresEncontrados = 0;
 let erros = 0;
 let tempo = 0;
 let intervalo;
+let nomeJogador = "";
+
+function mostrarToast(mensagem, tipo) {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${tipo}`;
+    toast.textContent = mensagem;
+    container.appendChild(toast);
+    setTimeout(() => { toast.remove(); }, 3000);
+}
+
+btnIniciar.addEventListener('click', () => {
+    if (inputNome.value.trim() === "") {
+        mostrarToast("Por favor, digite seu nome!", "error"); 
+        return;
+    }
+    nomeJogador = inputNome.value;
+    telaInicial.classList.add('hidden'); 
+    document.getElementById('hud').classList.remove('hidden');
+});
 
 btnPortal.addEventListener('click', async () => {
-
     resultados.innerHTML = "";
     tempo = 0;
     tempoSpan.textContent = 0;
+    paresEncontrados = 0;
+    paresSpan.textContent = "0/10";
+    erros = 0;
+    errosSpan.textContent = 0;
+    movimentos = 0;
 
     clearInterval(intervalo);
-
     intervalo = setInterval(() => {
         tempo++;
         tempoSpan.textContent = tempo;
     }, 1000);
-    paresEncontrados = 0;
-    erros = 0;
-    errosSpan.textContent = 0;
 
     loader.classList.remove('hidden');
 
     try {
-
-    let personagens = await carregarPersonagem()  
-
-
+        let personagens = await carregarPersonagem();
         resultados.innerHTML = "";
 
         personagens.forEach((pokemon) => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.setAttribute('data-key', pokemon.id);
+            card.innerHTML = `
+                 <div class="card-inner">
+                    <div class="card-verso">?</div>
+                    <div class="card-frente">
+                        <img src="${pokemon.image}" alt="${pokemon.name}" loading="lazy">
+                        <div class="char-info">
+                            <h3>${pokemon.name}</h3>
+                            <p>Tipo: <span class="badge-tipo">${pokemon.tipo}</span></p>
+                        </div>
+                    </div>    
+                </div>    
+            `;
+            resultados.appendChild(card);
+        });
 
-            resultados.innerHTML += `
-     <div class="card" data-id="${pokemon.id}">
-        <div class="card-inner">
-            <div class="card-verso"></div>
-            <div class="card-frente">
-                <img src="${pokemon.image}" alt="${pokemon.name}">
-                <div class="char-info">
-                    <h3>${pokemon.name}</h3>
-                    <p>Tipo: ${pokemon.tipo}</p>
-                </div>
-            </div>    
-        </div>
-    </div>    
-`;
+        loader.classList.add('hidden');
 
+        resultados.addEventListener('click', tratarCliqueGrade);
+
+    } catch (erro) {
+        loader.classList.add('hidden');
+        resultados.innerHTML = '<p class="text-red-500">Erro no portal. Tente novamente!</p>';
+        console.error(erro);
+    }
 });
 
-
-        const cartas = document.querySelectorAll('.card');
-
-cartas.forEach(carta => {
-
-    carta.addEventListener('click', () => {
-    if (bloqueado) return;
-    if (carta === primeiraCarta) return;
+function tratarCliqueGrade(e) {
+    const carta = e.target.closest('.card');
+    if (!carta || bloqueado) return;
+    if (carta.classList.contains('card-acertada') || carta.classList.contains('card-virada')) return;
 
     carta.classList.add('card-virada');
     
     if (primeiraCarta === null) {
-
         primeiraCarta = carta;
-
     } else {
-
+        if (carta === primeiraCarta) return;
         segundaCarta = carta;
         movimentos++;
-        console.log("Movimentos:", movimentos);
+        bloqueado = true;
 
-        if (primeiraCarta.dataset.id === segundaCarta.dataset.id) {
-
-            console.log("Acertou!");
-            
-            console.log("Pares:", paresEncontrados);
+        if (primeiraCarta.dataset.key === segundaCarta.dataset.key) {
             primeiraCarta.classList.add('card-acertada');
             segundaCarta.classList.add('card-acertada');
             paresEncontrados++;
-            if (paresEncontrados === 10) {
-        clearInterval(intervalo);
-        console.log("Você venceu!");
-        const pontos = paresEncontrados * 200;
-        const lista = document.getElementById('lista-ranking');
-        const novoItem = document.createElement('li');
-        novoItem.innerHTML = `<span>Você: ${pontos} pts</span>`;
-        lista.appendChild(novoItem);
-        
-        alert(`Parabéns! Você venceu em ${tempo} segundos com ${pontos} pontos!`);
-}
+            paresSpan.textContent = `${paresEncontrados}/10`;
+            
             primeiraCarta = null;
             segundaCarta = null;
-            
-        } else {
+            bloqueado = false;
 
-            console.log("Errou!");
+            if (paresEncontrados === 10) {
+                verificarVitoria();
+            }
+        } else {
             erros++;
             errosSpan.textContent = erros;
-            console.log("Erros:", erros);
-            bloqueado = true;
             setTimeout(() => {
-
                 primeiraCarta.classList.remove('card-virada');
                 segundaCarta.classList.remove('card-virada');
-
                 primeiraCarta = null;
                 segundaCarta = null;
                 bloqueado = false;
             }, 1000);
-            }
-        } 
-
-});
-});
-
-
-        loader.classList.add('hidden')
-
-    } catch (erro) {
-        loader.classList.add('hidden');
-        resultados.innerHTML += '<p class="text-red-500">Erro no portal. Tente novamente!</p>';
-        console.error(erro);
+        }
     }
-
+}
 
 async function carregarPersonagem() {
-    const data = []
-
-    for (let i = 0; i < 10; i++){
-        const idAleatorio = Math.floor(Math.random() * 826) + 1;
+    const data = [];
+    const ids = new Set();
+    while (ids.size < 10) {
+        ids.add(Math.floor(Math.random() * 151) + 1);
+    }
+    for (const idAleatorio of ids) {
         const resposta = await fetch(`https://pokeapi.co/api/v2/pokemon/${idAleatorio}`);
         const dados = await resposta.json();
         const pokemon = {
             id: dados.id,
             name: dados.name,
             image: dados.sprites.other['official-artwork'].front_default,
-            tipo: dados.types[0].type.name  // "fire", "water", "grass"...
+            tipo: dados.types[0].type.name
         };   
-        data.push(pokemon)
-        data.push(pokemon) 
-       
+        data.push(pokemon);
+        data.push(pokemon); 
     }
-        data.sort(() => Math.random() - 0.5);
+    data.sort(() => Math.random() - 0.5);
     return data;
 }
 
-});
-async function carregarRanking() {
-    const lista = document.getElementById('lista-ranking');
-    if (!lista) return;
-
-    const top5 = await consultarRanking(); 
+async function verificarVitoria() {
+    clearInterval(intervalo);
+    const pontuacao = Math.max(0, Math.floor(5000 - tempo * 10));
     
-    if (top5 && top5.length > 0) {
-        lista.innerHTML = top5.map((p, index) => `
-            <li class="ranking-item">
-                <span class="rank-pos">${index + 1}º</span>
-                <span class="rank-nome">${p.nome}</span>
-                <span class="rank-pts">${p.pontuacao} pts</span>
-            </li>
-        `).join('');
+    mostrarToast(`Você venceu em ${tempo} segundos!`, "success");
+    document.getElementById('pontuacao-final').textContent = pontuacao;
+    document.getElementById('tempo-final').textContent = tempo;
+    
+    document.getElementById('tela-final').classList.remove('hidden');
+    
+    const salvoComSucesso = await salvarPontuacao(nomeJogador, pontuacao, tempo);
+    if (salvoComSucesso) {
+        mostrarToast("Pontuação sincronizada no Neon!", "success");
+    } else {
+        mostrarToast("Erro ao salvar no banco.", "error");
     }
+
+    const ranking = await buscarLeaderboard();
+    renderizarLeaderboard(ranking);
+
+    
 }
+
+function renderizarLeaderboard(ranking) {
+    const tbody = document.getElementById('corpo-ranking');
+    tbody.innerHTML = "";
+    const medalhas = ['🥇', '🥈', '🥉'];
+    
+    if (!ranking || ranking.length === 0) return;
+    
+    ranking.forEach((r, i) => {
+        const destaque = r.nome_jogador === nomeJogador ? 'class="linha-destaque"' : '';
+        
+        const tempoDoBanco = r.tempo_segundos || r.tempo || 0;
+        
+        tbody.innerHTML += `
+            <tr ${destaque}>
+                <td>${medalhas[i] ?? (i + 1)}</td>
+                <td>${r.nome_jogador || r.nome}</td>
+                <td>${Number(r.pontuacao).toLocaleString('pt-BR')} pts</td>
+                <td>${tempoDoBanco}s</td>
+            </tr>
+        `;
+    });
+}
+
+btnReiniciar.addEventListener('click', () => {
+    document.getElementById('tela-final').classList.add('hidden');
+    document.getElementById('hud').classList.add('hidden');
+    telaInicial.classList.remove('hidden');
+    resultados.innerHTML = '<p>O portal está fechado.</p>';
+    inputNome.value = "";
+});
